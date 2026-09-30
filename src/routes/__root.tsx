@@ -3,14 +3,12 @@ import {
   Scripts,
   createRootRouteWithContext,
 } from '@tanstack/react-router'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-import { TanStackDevtools } from '@tanstack/react-devtools'
 
-import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
-
-import appCss from '../styles.css?url'
+import appCss from '../styles/globals.css?url'
 
 import type { QueryClient } from '@tanstack/react-query'
+import { Navbar } from '#/components/layout/Navbar.tsx'
+import { Bounce, ToastContainer } from 'react-toastify'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -27,7 +25,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'TanStack Start Starter',
+        title: 'Disney Deck',
       },
     ],
     links: [
@@ -45,20 +43,27 @@ function RootDocument({ children }: { children: React.ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
-      </head>
-      <body>
-        {children}
-        <TanStackDevtools
-          config={{
-            position: 'bottom-right',
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                const theme = localStorage.getItem('theme');
+                if (theme !== 'light') document.documentElement.classList.add('dark');
+              } catch (e) {}
+            `,
           }}
-          plugins={[
-            {
-              name: 'Tanstack Router',
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-            TanStackQueryDevtools,
-          ]}
+        />
+      </head>
+      <body className="flex w-full h-screen bg-background overflow-hidden">
+        <Navbar />
+        <div className="min-h-0 overflow-auto w-full p-8">{children}</div>
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={true}
+          closeOnClick={true}
+          theme="colored"
+          transition={Bounce}
         />
         <Scripts />
       </body>

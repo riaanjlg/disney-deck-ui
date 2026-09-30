@@ -10,33 +10,53 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CharactersIndexRouteImport } from './routes/characters/index'
+import { Route as GuessTheCharacterIndexRouteImport } from './routes/guess-the-character/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CharactersIndexRoute = CharactersIndexRouteImport.update({
+  id: '/characters/',
+  path: '/characters/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuessTheCharacterIndexRoute = GuessTheCharacterIndexRouteImport.update({
+  id: '/guess-the-character/',
+  path: '/guess-the-character/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/characters/': typeof CharactersIndexRoute
+  '/guess-the-character/': typeof GuessTheCharacterIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/characters': typeof CharactersIndexRoute
+  '/guess-the-character': typeof GuessTheCharacterIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/characters/': typeof CharactersIndexRoute
+  '/guess-the-character/': typeof GuessTheCharacterIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/characters/' | '/guess-the-character/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/characters' | '/guess-the-character'
+  id: '__root__' | '/' | '/characters/' | '/guess-the-character/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CharactersIndexRoute: typeof CharactersIndexRoute
+  GuessTheCharacterIndexRoute: typeof GuessTheCharacterIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +68,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/characters/': {
+      id: '/characters/'
+      path: '/characters'
+      fullPath: '/characters/'
+      preLoaderRoute: typeof CharactersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guess-the-character/': {
+      id: '/guess-the-character/'
+      path: '/guess-the-character'
+      fullPath: '/guess-the-character/'
+      preLoaderRoute: typeof GuessTheCharacterIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CharactersIndexRoute: CharactersIndexRoute,
+  GuessTheCharacterIndexRoute: GuessTheCharacterIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

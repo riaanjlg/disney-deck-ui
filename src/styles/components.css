@@ -1,0 +1,46 @@
+/* typography */
+.logo {
+  @apply text-2xl font-bold font-[Walter] tracking-tight text-foreground;
+}
+
+.heading-lg {
+  @apply text-2xl font-bold font-heading tracking-tight text-foreground;
+}
+
+.heading-md {
+  @apply text-xl font-semibold font-heading tracking-tight text-foreground;
+}
+
+.text-muted {
+  @apply text-sm text-foreground/60;
+}
+
+/* buttons */
+
+.btn-primary {
+  @apply px-3 py-2 rounded-md bg-primary text-foreground font-medium cursor-pointer
+         flex gap-2 items-center justify-center
+         hover:opacity-90 transition-opacity
+         disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.btn-transparent {
+  @apply px-3 py-2 rounded-md text-foreground font-medium cursor-pointer
+         flex gap-2 items-center justify-center
+         hover:opacity-70 transition-colors
+         disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.btn-secondary {
+  @apply px-3 py-2 rounded-md border border-border text-foreground font-medium cursor-pointer
+         flex gap-2 items-center justify-center
+         hover:opacity-90 transition-colors
+         disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.btn-danger {
+  @apply px-3 py-2 rounded-md bg-red-600 text-white font-medium cursor-pointer
+         flex gap-2 items-center justify-center
+         hover:bg-red-700 transition-colors
+         disabled:opacity-50 disabled:cursor-not-allowed;
+}
