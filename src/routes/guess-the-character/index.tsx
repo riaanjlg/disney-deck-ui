@@ -97,7 +97,7 @@ function RouteComponent() {
   }
 
   return (
-    <>
+    <div className="p-8">
       <Header
         title="Guess the character"
         description="Try to guess the Disney character"
@@ -105,7 +105,7 @@ function RouteComponent() {
       />
 
       {!isCompleted ? (
-        <main className="w-200 mx-auto bg-card/20 p-8 rounded-2xl border border-foreground relative mt-20">
+        <main className="w-200 mx-auto p-8 rounded-2xl border border-foreground relative mt-20">
           <Button
             onClick={reset}
             className="absolute -top-15 right-0 cursor-pointer flex items-center gap-2"
@@ -141,7 +141,7 @@ function RouteComponent() {
             />
           ) : (
             character && (
-              <div className="flex items-center justify-center mb-5 bg-muted rounded-2xl overflow-hidden mt-5">
+              <div className="flex items-center justify-center mb-5 bg-muted/40 rounded-2xl overflow-hidden mt-5">
                 <img src={character.imageUrl} className="h-80" />
               </div>
             )
@@ -160,6 +160,6 @@ function RouteComponent() {
       ) : (
         <>Well fucking done</>
       )}
-    </>
+    </div>
   )
 }

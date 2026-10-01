@@ -4,130 +4,162 @@ import {
   PaginationEllipsis,
   PaginationItem,
   PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
 } from '@/components/ui/pagination'
+import { Input } from './ui/input'
+import { useState } from 'react'
+import type { SyntheticEvent } from 'react'
+import { Button } from './ui/button'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
+import { showPopup } from '#/lib/utils.ts'
+import useClickOutside from '#/hooks/useClickOutside.ts'
 
 interface PaginationBarProps {
   pageNumber: number
-  totalCount: number
-  pageSize: number
+  totalPages: number
   onPageChange: (pageNumber: number) => void
-  siblingCount?: number
-}
-
-const getPageRange = (
-  currentPage: number,
-  totalPages: number,
-  siblingCount: number,
-): (number | 'ellipsis')[] => {
-  const totalSlots = siblingCount * 2 + 5
-
-  if (totalPages <= totalSlots) {
-    return Array.from({ length: totalPages }, (_, i) => i + 1)
-  }
-
-  const leftSibling = Math.max(currentPage - siblingCount, 1)
-  const rightSibling = Math.min(currentPage + siblingCount, totalPages)
-
-  const showLeftEllipsis = leftSibling > 2
-  const showRightEllipsis = rightSibling < totalPages - 1
-
-  const range: (number | 'ellipsis')[] = [1]
-
-  if (showLeftEllipsis) {
-    range.push('ellipsis')
-  } else {
-    for (let page = 2; page < leftSibling; page++) range.push(page)
-  }
-
-  for (let page = leftSibling; page <= rightSibling; page++) {
-    if (page !== 1 && page !== totalPages) range.push(page)
-  }
-
-  if (showRightEllipsis) {
-    range.push('ellipsis')
-  } else {
-    for (let page = rightSibling + 1; page < totalPages; page++)
-      range.push(page)
-  }
-
-  range.push(totalPages)
-
-  return range
 }
 
 export function PaginationBar({
   pageNumber,
-  totalCount,
-  pageSize,
+  totalPages,
   onPageChange,
-  siblingCount = 1,
 }: PaginationBarProps) {
-  const totalPages = Math.max(Math.ceil(totalCount / pageSize), 1)
+  const [jumpValue, setJumpValue] = useState('')
+  const [showGoTo, setShowGoTo] = useState(false)
 
-  if (totalPages <= 1) return null
-
-  const pages = getPageRange(pageNumber, totalPages, siblingCount)
+  const ref = useClickOutside(() => setShowGoTo(false))
 
   const goTo = (page: number) => {
     if (page < 1 || page > totalPages || page === pageNumber) return
     onPageChange(page)
   }
 
-  return (
-    <Pagination>
-      <PaginationContent>
-        <PaginationItem>
-          <PaginationPrevious
-            href="#"
-            aria-disabled={pageNumber === 1}
-            className={
-              pageNumber === 1 ? 'pointer-events-none opacity-50' : undefined
-            }
-            onClick={(e) => {
-              e.preventDefault()
-              goTo(pageNumber - 1)
-            }}
-          />
-        </PaginationItem>
+  const handleJump = (e: SyntheticEvent) => {
+    e.preventDefault()
+    goTo(Number(jumpValue))
+    setJumpValue('')
+  }
 
-        {pages.map((page, i) =>
-          page === 'ellipsis' ? (
-            <PaginationItem key={`ellipsis-${i}`}>
-              <PaginationEllipsis />
-            </PaginationItem>
-          ) : (
-            <PaginationItem key={page}>
-              <PaginationLink
-                href="#"
-                isActive={page === pageNumber}
-                onClick={(e) => {
-                  e.preventDefault()
-                  goTo(page)
-                }}
-              >
-                {page}
-              </PaginationLink>
-            </PaginationItem>
-          ),
+  if (totalPages <= 1) return null
+
+  return (
+    <Pagination className="z-10">
+      <PaginationContent>
+        {pageNumber > 2 && (
+          <Button
+            disabled={pageNumber === 1}
+            onClick={() => goTo(1)}
+            className="cursor-pointer"
+          >
+            Go to first
+          </Button>
+        )}
+        <Button
+          disabled={pageNumber === 1}
+          onClick={() => goTo(pageNumber - 1)}
+          className="cursor-pointer"
+        >
+          <ChevronLeft size={14} />
+        </Button>
+
+        {pageNumber > 1 && (
+          <PaginationItem>
+            <PaginationLink
+              href="#"
+              onClick={(e) => {
+                e.preventDefault()
+                goTo(pageNumber - 1)
+              }}
+            >
+              {pageNumber - 1}
+            </PaginationLink>
+          </PaginationItem>
         )}
 
         <PaginationItem>
-          <PaginationNext
-            href="#"
-            aria-disabled={pageNumber === totalPages}
-            className={
-              pageNumber === totalPages
-                ? 'pointer-events-none opacity-50'
-                : undefined
-            }
-            onClick={(e) => {
-              e.preventDefault()
-              goTo(pageNumber + 1)
-            }}
-          />
+          <PaginationLink href="#" isActive onClick={(e) => e.preventDefault()}>
+            {pageNumber}
+          </PaginationLink>
         </PaginationItem>
+
+        {pageNumber < totalPages && (
+          <PaginationItem>
+            <PaginationLink
+              href="#"
+              onClick={(e) => {
+                e.preventDefault()
+                goTo(pageNumber + 1)
+              }}
+            >
+              {pageNumber + 1}
+            </PaginationLink>
+          </PaginationItem>
+        )}
+
+        {pageNumber !== totalPages && pageNumber < totalPages - 1 && (
+          <>
+            <div className="relative">
+              <PaginationItem>
+                <PaginationLink
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    setShowGoTo((prev) => !prev)
+                  }}
+                >
+                  <PaginationEllipsis />
+                </PaginationLink>
+              </PaginationItem>
+
+              <AnimatePresence>
+                {showGoTo && (
+                  <motion.div
+                    variants={showPopup}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    className="absolute top-10 right-0 primary p-1 rounded-xl"
+                    ref={ref}
+                  >
+                    <form onSubmit={handleJump}>
+                      <Input
+                        type="number"
+                        min={1}
+                        max={totalPages}
+                        placeholder="Go to..."
+                        className="w-20 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none m-0"
+                        value={jumpValue}
+                        onChange={(e) => setJumpValue(e.target.value)}
+                      />
+                    </form>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+            <PaginationItem>
+              <PaginationLink
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault()
+                  goTo(totalPages)
+                }}
+              >
+                {totalPages}
+              </PaginationLink>
+            </PaginationItem>
+          </>
+        )}
+
+        {pageNumber !== totalPages && (
+          <Button
+            disabled={pageNumber === totalPages}
+            onClick={() => goTo(pageNumber + 1)}
+            className="cursor-pointer"
+          >
+            <ChevronRight size={14} />
+          </Button>
+        )}
       </PaginationContent>
     </Pagination>
   )

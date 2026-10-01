@@ -1,23 +1,12 @@
 import type { CharacterResponse } from '#/features/characters/characterTypes.ts'
-import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '../../../components/ui/badge'
 
 interface CharacterCardBackProps {
   character: CharacterResponse
-  onFlip: () => void
 }
 
-export function CharacterCardBack({
-  character,
-  onFlip,
-}: CharacterCardBackProps) {
+export function CharacterCardBack({ character }: CharacterCardBackProps) {
   const featuredIn = [
     ...character.films,
     ...character.shortFilms,
@@ -34,7 +23,7 @@ export function CharacterCardBack({
   }
 
   return (
-    <Card className="mx-auto w-full h-full max-w-sm">
+    <Card className="w-full h-full border-2 border-foreground rounded-3xl">
       <CardHeader>
         <CardTitle>About {character.name}</CardTitle>
       </CardHeader>
@@ -75,11 +64,6 @@ export function CharacterCardBack({
           )}
         </div>
       </CardContent>
-      <CardFooter>
-        <Button className="w-full" onClick={onFlip}>
-          Go back
-        </Button>
-      </CardFooter>
     </Card>
   )
 }

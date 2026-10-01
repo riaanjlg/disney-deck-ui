@@ -13,7 +13,7 @@ const Header = ({ title, description, center, children }: HeaderProps) => {
       className={`flex ${center ? 'justify-center' : 'justify-between'} mb-8`}
     >
       <div>
-        <h1 className="mb-2 font-bold text-2xl heading-md">{title}</h1>
+        <h1 className="mb-2 heading-md">{title}</h1>
         <p className="text-zinc-500">{description}</p>
       </div>
       {children && children}

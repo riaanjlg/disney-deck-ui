@@ -24,7 +24,6 @@ export const Route = createFileRoute('/characters/')({
 function RouteComponent() {
   const searchParams = useSearch({ from: '/characters/' })
   const navigate = useNavigate({ from: '/characters/' })
-  const [flippedId, setFlippedId] = useState<string | null>(null)
 
   const [filters, setFilters] = useState<PagedRequest>({
     pageNumber: 1,
@@ -57,7 +56,7 @@ function RouteComponent() {
   }
 
   return (
-    <div>
+    <div className="p-8 pb-28">
       <Header title="Characters" description="All disney characters">
         <div className="flex items-center justify-center gap-8">
           <Link
@@ -80,7 +79,7 @@ function RouteComponent() {
         {isError ? (
           <div>{error.message}</div>
         ) : isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
             {Array.from({ length: PAGE_SIZE }).map((_, i) => (
               <div key={i} className="aspect-video overflow-hidden rounded-2xl">
                 <Skeleton
@@ -93,23 +92,27 @@ function RouteComponent() {
             ))}
           </div>
         ) : characters?.data.length ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
             {characters.data.map((character) => (
               <FlipCard
                 key={character.id}
-                isFlipped={flippedId === character.id}
-                front={
-                  <CharacterCardFront
-                    character={character}
-                    onFlip={() => setFlippedId(character.id)}
-                  />
-                }
-                back={
-                  <CharacterCardBack
-                    character={character}
-                    onFlip={() => setFlippedId(null)}
-                  />
-                }
+                front={<CharacterCardFront character={character} />}
+                back={<CharacterCardBack character={character} />}
+                axis="y"
+                flipOnClick
+                draggable
+                dragDistance={0}
+                tilt
+                tiltMax={12}
+                glare
+                glareOpacity={0.22}
+                hoverScale={1.03}
+                perspective={1100}
+                stiffness={170}
+                damping={20}
+                width={400}
+                height={300}
+                radius={22}
               />
             ))}
           </div>
@@ -120,8 +123,7 @@ function RouteComponent() {
 
       <PaginationBar
         pageNumber={filters.pageNumber}
-        pageSize={PAGE_SIZE}
-        totalCount={characters?.total ?? 0}
+        totalPages={characters?.totalPages ?? 0}
         onPageChange={(pageNumber) => updateFilters({ pageNumber })}
       />
     </div>
